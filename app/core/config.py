@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     DESCRIPTION: str = "A simple FastAPI template"
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
+    PORT: int = 8000
     
     # Database
     DATABASE_URL: str

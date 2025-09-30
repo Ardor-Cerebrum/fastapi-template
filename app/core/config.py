@@ -23,8 +23,8 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     
     # CORS
-    ALLOWED_HOSTS: List[str] = ["localhost", "127.0.0.1"]
-    ALLOW_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8080"]
+    ALLOWED_HOSTS: List[str] = ["*"]
+    ALLOW_ORIGINS: List[str] = ["*"]
     ALLOW_CREDENTIALS: bool = True
     ALLOW_METHODS: List[str] = ["*"]
     ALLOW_HEADERS: List[str] = ["*"]

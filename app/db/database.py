@@ -8,12 +8,19 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
+import logging
 
 from app.core.config import settings
 
+logger = logging.getLogger(__name__)
+
+NO_DB_SET_ERROR = "DATABASE_URL is not set"
 
 # Create SQLAlchemy engine
-if settings.DATABASE_URL.startswith("sqlite"):
+engine = None
+if not settings.DATABASE_URL:
+    logger.warning(NO_DB_SET_ERROR)
+elif settings.DATABASE_URL.startswith("sqlite"):
     # SQLite specific configuration
     engine = create_engine(
         settings.DATABASE_URL,
@@ -33,11 +40,12 @@ else:
     )
 
 # Create SessionLocal class
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = None
+if engine:
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Create Base class for models
 Base = declarative_base()
-
 
 def get_db():
     """
@@ -46,6 +54,10 @@ def get_db():
     Yields:
         Database session
     """
+    if not SessionLocal:
+        logger.warning(f"Cannot get session {NO_DB_SET_ERROR}.")
+        return
+
     db = SessionLocal()
     try:
         yield db
@@ -55,4 +67,7 @@ def get_db():
 
 def create_tables():
     """Create all database tables."""
+    if not engine:
+        logger.warning(f"Cannot create database tables {NO_DB_SET_ERROR}.")
+        return
     Base.metadata.create_all(bind=engine)

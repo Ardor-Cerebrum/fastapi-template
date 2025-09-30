@@ -4,7 +4,7 @@ Core configuration settings for the FastAPI application.
 This module handles all environment-based configuration using Pydantic BaseSettings.
 """
 
-from typing import List, Union
+from typing import List, Union, Optional
 
 from pydantic_settings import BaseSettings
 
@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     PORT: int = 8000
     
     # Database
-    DATABASE_URL: str
+    DATABASE_URL: Optional[str] = ""
     
     # CORS
     ALLOWED_HOSTS: List[str] = ["*"]

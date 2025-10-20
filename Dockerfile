@@ -3,8 +3,7 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Define ARG and ENV for port
-ARG ARDOR_PORT=1337
-ENV ARDOR_PORT=${ARDOR_PORT}
+ARG PORT=1337
 
 # Copy and install dependencies
 COPY requirements.txt .
@@ -14,7 +13,9 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Expose configurable port
-EXPOSE ${ARDOR_PORT}
+EXPOSE ${PORT}
+
+ENV PORT=${PORT}
 
 # Start uvicorn with configured port
-CMD uvicorn main:app --host 0.0.0.0 --port ${ARDOR_PORT}
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT}

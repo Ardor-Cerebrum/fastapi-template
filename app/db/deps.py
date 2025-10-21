@@ -15,10 +15,10 @@ from app.db.database import SessionLocal
 def get_db() -> Generator[Session, None, None]:
     """
     Get database session dependency.
-    
+
     This is the main database dependency used throughout the application.
     It automatically handles opening and closing database sessions.
-    
+
     Yields:
         SQLAlchemy database session
     """
@@ -35,10 +35,10 @@ def get_db() -> Generator[Session, None, None]:
 def get_db_session() -> Session:
     """
     Get a database session directly (not as a dependency).
-    
+
     Warning: You must manually close this session when done.
     Use get_db() dependency in FastAPI routes instead.
-    
+
     Returns:
         SQLAlchemy database session
     """

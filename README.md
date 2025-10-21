@@ -5,7 +5,7 @@ A modern, production-ready FastAPI template with a clean architecture, comprehen
 ## 🚀 Features
 
 - **FastAPI**: Modern, fast web framework for building APIs
-- **SQLAlchemy**: Powerful ORM with type hints support  
+- **SQLAlchemy**: Powerful ORM with type hints support
 - **Pydantic**: Data validation using Python type annotations
 - **Code Quality**: Pre-configured with Black and isort
 - **Database**: SQLite for development, easy to switch to PostgreSQL
@@ -46,7 +46,7 @@ fastapi-template/
 
 ### Prerequisites
 
-- Python 3.9+
+- Python 3.12+
 - pip or pipenv
 
 
@@ -69,7 +69,7 @@ This template follows a layered architecture pattern:
 ### Layer Responsibilities
 
 - **API Layer** (`app/api/`): HTTP endpoints, request validation, response formatting
-- **Services Layer** (`app/services/`): Business logic, workflow orchestration  
+- **Services Layer** (`app/services/`): Business logic, workflow orchestration
 - **CRUD Layer** (`app/crud/`): Database operations, data access patterns
 - **Database Layer** (`app/db/`): Models, database configuration, connections
 - **Schemas** (`app/schemas/`): Data validation, serialization models
@@ -97,7 +97,7 @@ Each module has detailed documentation in its respective README.md file:
 ### Using Docker (Recommended)
 
 ```dockerfile
-FROM python:3.9-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 COPY requirements.txt .

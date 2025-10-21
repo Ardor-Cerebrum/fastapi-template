@@ -4,11 +4,12 @@ Database connection and session management.
 This module sets up SQLAlchemy engine, session factory, and base model class.
 """
 
+import logging
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
-import logging
 
 from app.core.config import settings
 
@@ -50,7 +51,7 @@ Base = declarative_base()
 def get_db():
     """
     Database dependency for FastAPI.
-    
+
     Yields:
         Database session
     """

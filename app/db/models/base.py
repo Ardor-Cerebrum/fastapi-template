@@ -13,16 +13,16 @@ from app.db.database import Base
 class BaseModel(Base):
     """
     Base model class with common fields and methods.
-    
+
     All models should inherit from this class to get:
     - Primary key (id)
     - Creation timestamp (created_at)
     - Update timestamp (updated_at)
     - Common utility methods
     """
-    
+
     __abstract__ = True
-    
+
     @declared_attr
     def __tablename__(cls) -> str:
         """Generate table name from class name."""

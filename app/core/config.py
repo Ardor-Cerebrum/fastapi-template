@@ -4,13 +4,14 @@ Core configuration settings for the FastAPI application.
 This module handles all environment-based configuration using Pydantic BaseSettings.
 """
 
-from typing import List, Union, Optional
+from typing import List, Optional, Union
 
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
-    
+
     # Application
     PROJECT_NAME: str = "FastAPI Template"
     VERSION: str = "1.0.0"
@@ -18,20 +19,20 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
     PORT: int = 8000
-    
+
     # Database
     DATABASE_URL: Optional[str] = ""
-    
+
     # CORS
     ALLOWED_HOSTS: List[str] = ["*"]
     ALLOW_ORIGINS: List[str] = ["*"]
     ALLOW_CREDENTIALS: bool = True
     ALLOW_METHODS: List[str] = ["*"]
     ALLOW_HEADERS: List[str] = ["*"]
-    
+
     # API Settings
     API_V1_STR: str = "/api/v1"
-    
+
     # Logging
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

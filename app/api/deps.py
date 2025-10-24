@@ -17,11 +17,11 @@ def get_pagination_params(
 ) -> dict:
     """
     Get pagination parameters from query parameters.
-    
+
     Args:
         skip: Number of records to skip
         limit: Maximum number of records to return
-        
+
     Returns:
         Dictionary with pagination parameters
     """

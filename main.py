@@ -7,7 +7,7 @@ middleware, and route handlers.
 
 import time
 from contextlib import asynccontextmanager
-from typing import Dict, Any
+from typing import Any, Dict
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,26 +24,26 @@ from app.db.database import create_tables
 async def lifespan(app: FastAPI):
     """
     Application lifespan event handler.
-    
+
     Handles startup and shutdown events for the FastAPI application.
     """
     # Startup
     print("🚀 Starting FastAPI application...")
-    
+
     # Create database tables
     try:
         create_tables()
         print("✅ Database tables created successfully")
     except Exception as e:
         print(f"❌ Error creating database tables: {e}")
-    
+
     # Store startup time for health check
     app.state.startup_time = time.time()
-    
+
     print("✅ FastAPI application started successfully")
-    
+
     yield
-    
+
     # Shutdown
     print("🛑 Shutting down FastAPI application...")
     print("✅ FastAPI application stopped")
@@ -114,7 +114,7 @@ async def read_root() -> Dict[str, Any]:
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     uvicorn.run(
         "main:app",
         host="0.0.0.0",

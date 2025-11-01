@@ -47,7 +47,43 @@ fastapi-template/
 ### Prerequisites
 
 - Python 3.12+
-- pip or pipenv
+- [uv](https://docs.astral.sh/uv/) - Fast Python package manager
+
+### Installation
+
+```bash
+# Install uv if you haven't already
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install dependencies (creates .venv automatically)
+uv sync
+
+# Install with development dependencies
+uv sync --extra dev
+```
+
+### Running the Application
+
+```bash
+# Run the development server
+uv run uvicorn main:app --reload
+
+# The API will be available at http://localhost:8000
+# API documentation at http://localhost:8000/docs
+```
+
+### Adding New Dependencies
+
+```bash
+# Add a production dependency
+uv add package-name
+
+# Add a development dependency
+uv add --dev package-name
+
+# Update dependencies
+uv lock --upgrade
+```
 
 
 ## 🏗️ Architecture
@@ -96,15 +132,15 @@ Each module has detailed documentation in its respective README.md file:
 
 ### Using Docker (Recommended)
 
-```dockerfile
-FROM python:3.12-slim
+```bash
+# Build the Docker image
+docker build -t fastapi-template .
 
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# Run the container
+docker run -p 8000:1337 fastapi-template
 
-COPY . .
-EXPOSE 8000
-
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Or use docker-compose if you have a docker-compose.yml file
+docker-compose up
 ```
+
+The Dockerfile uses `uv` for fast dependency installation.

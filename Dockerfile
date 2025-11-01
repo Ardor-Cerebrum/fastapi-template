@@ -1,13 +1,16 @@
-FROM python:3.12-slim
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
 WORKDIR /app
 
 # Define ARG and ENV for port
 ARG PORT=1337
+ENV PORT=${PORT}
 
-# Copy and install dependencies
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# Copy dependency files
+COPY pyproject.toml uv.lock ./
+
+# Install dependencies
+RUN uv sync --frozen --no-dev
 
 # Copy application code
 COPY . .
@@ -15,7 +18,5 @@ COPY . .
 # Expose configurable port
 EXPOSE ${PORT}
 
-ENV PORT=${PORT}
-
 # Start uvicorn with configured port
-CMD uvicorn main:app --host 0.0.0.0 --port ${PORT}
+CMD uv run uvicorn main:app --host 0.0.0.0 --port ${PORT}

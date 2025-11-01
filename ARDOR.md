@@ -10,6 +10,7 @@ This template is a modern, production-ready FastAPI application with clean archi
 - **SQLAlchemy 2.0**: ORM with full type support
 - **Pydantic v2**: Data validation using Python type annotations
 - **Clean Architecture**: Multi-layered structure with separation of concerns
+- **uv**: Fast Python package manager for dependency management
 - **Docker**: Containerization for easy deployment
 - **Code Quality**: Configured Black, isort, Ruff linter, and pre-commit hooks
 
@@ -34,9 +35,10 @@ The project follows a multi-layered architecture:
 ```
 fastapi-template/
 ├── main.py                    # FastAPI application entry point
-├── pyproject.toml            # Tool configuration (Black, isort)
+├── pyproject.toml            # Project metadata and dependencies (uv)
+├── uv.lock                   # Dependency lock file
 ├── .pre-commit-config.yaml   # Pre-commit hooks configuration
-├── requirements.txt          # Python dependencies
+├── .python-version           # Python version specification for uv
 ├── Dockerfile               # Docker configuration
 ├── app/                     # Main application code
 │   ├── api/                 # API layer - HTTP endpoints
@@ -679,6 +681,74 @@ def get_expensive_data():
 ```
 ## Development Setup and Quality Tools
 
+### Package Management with uv
+
+This project uses **uv** - a fast Python package manager written in Rust. It's significantly faster than pip and provides better dependency resolution.
+
+#### Installation
+
+```bash
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+#### Basic Commands
+
+```bash
+# Install all dependencies (creates .venv automatically)
+uv sync
+
+# Install with development dependencies
+uv sync --extra dev
+
+# Add a new production dependency
+uv add fastapi
+
+# Add a development dependency
+uv add --dev pytest
+
+# Remove a dependency
+uv remove package-name
+
+# Update all dependencies
+uv lock --upgrade
+
+# Update specific package
+uv lock --upgrade-package fastapi
+
+# Run a command in the virtual environment
+uv run uvicorn main:app --reload
+
+# Run Python scripts
+uv run python script.py
+
+# Run tests
+uv run pytest
+```
+
+#### Custom Virtual Environment Path
+
+By default, uv creates `.venv` in the project directory. To use a custom path:
+
+```bash
+# Set via environment variable
+export UV_PROJECT_ENVIRONMENT=/opt/.venv
+uv sync
+
+# Or set in .env file
+echo "UV_PROJECT_ENVIRONMENT=/opt/.venv" >> .env
+```
+
+**Note**: The custom path must be absolute. For production deployments, ensure the directory exists and has proper permissions.
+
+#### Key Benefits
+
+- **Speed**: 10-100x faster than pip
+- **Automatic venv**: Creates and manages `.venv` automatically
+- **Lock file**: `uv.lock` ensures reproducible installs
+- **No activation needed**: Use `uv run` instead of activating venv
+- **Better resolution**: Handles complex dependency conflicts
+
 ### Pre-commit Hooks
 
 This project uses pre-commit hooks to ensure code quality and consistency. The configuration includes:
@@ -691,35 +761,40 @@ This project uses pre-commit hooks to ensure code quality and consistency. The c
 #### Running Pre-commit Hooks
 
 ```bash
+# Install pre-commit hooks
+uv run pre-commit install
+
 # Run all hooks with auto-fix
-pre-commit run -a --fix
+uv run pre-commit run -a --fix
 ```
 
 #### Manual Code Quality Checks
 
 ```bash
 # Run Ruff linter
-ruff check .
+uv run ruff check .
 
 # Run Ruff linter with auto-fix
-ruff check . --fix
+uv run ruff check . --fix
 
 # Run Ruff formatter
-ruff format .
+uv run ruff format .
 
 # Run Black formatter
-black .
+uv run black .
 
 # Run isort
-isort .
+uv run isort .
 ```
 
 ### Development Workflow
 
-1. **Setup**: Install dependencies and pre-commit hooks
+1. **Setup**: Run `uv sync --extra dev` to install all dependencies
 2. **Development**: Write code following the established patterns
-3. **Quality**: Run pre-commit hooks before committing
-4. **Testing**: Ensure all tests pass
+3. **Add dependencies**: Use `uv add` instead of manually editing pyproject.toml
+4. **Quality**: Run `uv run pre-commit run -a --fix` before committing
+5. **Testing**: Run `uv run pytest` to ensure all tests pass
+6. **Run app**: Use `uv run uvicorn main:app --reload` for development
 
 ## Conclusion
 

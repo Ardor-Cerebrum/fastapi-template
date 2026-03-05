@@ -5,6 +5,7 @@ This module sets up the FastAPI application with all necessary configurations,
 middleware, and route handlers.
 """
 
+
 import time
 from contextlib import asynccontextmanager
 from typing import Any, Dict

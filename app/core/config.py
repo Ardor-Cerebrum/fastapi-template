@@ -23,6 +23,14 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: Optional[str] = ""
 
+    # Redis and Celery
+    REDIS_URL: str = "redis://localhost:6379/0"
+
+    # Minio
+    MINIO_ENDPOINT: str = "localhost:9000"
+    MINIO_ACCESS_KEY: str = "minioadmin"
+    MINIO_SECRET_KEY: str = "minioadmin"
+
     # CORS
     ALLOWED_HOSTS: List[str] = ["*"]
     ALLOW_ORIGINS: List[str] = ["*"]

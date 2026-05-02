@@ -10,7 +10,8 @@ ENV PORT=${PORT}
 COPY pyproject.toml uv.lock ./
 
 # Install dependencies
-RUN uv sync --frozen --no-dev
+COPY requirements.txt ./
+RUN uv pip install -r requirements.txt --system
 
 # Copy application code
 COPY . .
@@ -19,4 +20,4 @@ COPY . .
 EXPOSE ${PORT}
 
 # Start uvicorn with configured port
-CMD uv run uvicorn main:app --host 0.0.0.0 --port ${PORT}
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT}

@@ -7,17 +7,24 @@ middleware, and route handlers.
 
 
 import time
+import boto3
+from celery import Celery
 from contextlib import asynccontextmanager
-from typing import Any, Dict
+from typing import Any, Dict, List
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, UploadFile, File, Form, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.core.config import settings
-from app.db.database import create_tables
+from app.db.database import create_tables, get_db
+from app.db.models.video import Video
+
+# Celery configuration
+celery_app = Celery("lumina_portfolio", broker=settings.REDIS_URL)
 
 
 # Application startup and shutdown events
@@ -37,6 +44,10 @@ async def lifespan(app: FastAPI):
         print("✅ Database tables created successfully")
     except Exception as e:
         print(f"❌ Error creating database tables: {e}")
+
+
+
+
 
     # Store startup time for health check
     app.state.startup_time = time.time()
@@ -65,10 +76,10 @@ app = FastAPI(
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOW_ORIGINS,
-    allow_credentials=settings.ALLOW_CREDENTIALS,
-    allow_methods=settings.ALLOW_METHODS,
-    allow_headers=settings.ALLOW_HEADERS,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -107,11 +118,51 @@ async def read_root() -> Dict[str, Any]:
     }
 
 
-# Include API routers
-# Note: API routers should be created in app/api/api_router.py
-# and included here like this:
-# from app.api.api_router import api_router
-# app.include_router(api_router, prefix=settings.API_V1_STR)
+@app.post("/upload")
+async def upload_video(
+    title: str = Form(...),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    """Upload a video and trigger processing."""
+    s3 = boto3.client(
+        "s3",
+        endpoint_url=f"http://{settings.MINIO_ENDPOINT}",
+        aws_access_key_id=settings.MINIO_ACCESS_KEY,
+        aws_secret_access_key=settings.MINIO_SECRET_KEY,
+    )
+
+    # Save to Minio
+    file_content = await file.read()
+    s3.put_object(
+        Bucket="uploads",
+        Key=file.filename,
+        Body=file_content
+    )
+
+    # Create DB record
+    video = Video(
+        title=title,
+        status="pending",
+        original_file_name=file.filename
+    )
+    db.add(video)
+    db.commit()
+    db.refresh(video)
+
+    # Trigger Celery
+    celery_app.send_task("worker.process_video", args=[str(video.id)])
+
+    return {"message": "Upload successful", "video_id": str(video.id)}
+
+
+@app.get("/videos")
+async def get_videos(db: Session = Depends(get_db)):
+    """List all videos."""
+    videos = db.query(Video).order_by(Video.created_at.desc()).all()
+    return videos
+
+
 
 if __name__ == "__main__":
     import uvicorn
